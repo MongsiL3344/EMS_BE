@@ -1,0 +1,22 @@
+### dotenv ###
+.env
+
+### IDE 설정파일 ###
+.vscode/
+.idea/
+
+### node_modules ###
+node_modules/
+
+### dist ###
+dist/
+
+### logs ###
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+### system files ###
+.DS_Store
+Thumbs.db
