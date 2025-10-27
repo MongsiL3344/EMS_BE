@@ -1,0 +1,49 @@
+import { z } from "zod";
+
+// 입력검증 -> 타입값은 LoginDto로 사용
+export const UserBody = z.object({
+  email: z.string().trim().toLowerCase().pipe(z.email()),
+  password: z.string().min(8).max(72),
+});
+export type LoginDto = z.infer<typeof UserBody>;
+
+// DB users 테이블 스키마
+export type UserEntity = Readonly<{
+  id: number;
+  email: string;
+  password_hash: string;
+  session_id: string | null;
+  session_expires_at: Date | null;
+}>;
+
+// 세션체크 메서드의 리턴타입 (state : "valid" / "expired" / "invalid") -> valid일 경우에만 세션정보 리턴
+export type SessionCheckResult =
+  | { state: "valid"; user: { id: number; email: string; session_id: string; session_expires_at: Date} }
+  | { state: "expired" }
+  | { state: "invalid" };
+
+// 응답타입 설정 (성공 -> OK, user.email, message, 세션정보 / 실패 -> OK, user.email, message)
+export type SessionInfo = { session_id: string; session_expires_at: Date };
+export type LoginSuccess = {
+  ok: true;
+  user: { email: string };
+  session: SessionInfo;
+  message: string;
+};
+export type LoginFail = { ok: false; user: { email: string }; message: string };
+export type LoginResult = LoginSuccess | LoginFail;
+
+// 레포지토리 레이어의 메서드별 반환 타입
+export interface UserRepositoryInterface {
+  findUserByEmail(email: string): Promise<UserEntity | null>;
+  findUserBySessionId(sessionId: string): Promise<UserEntity | null>;
+  updateSession(userId: number, sid: string, expiresAt: Date): Promise<void>;
+  clearSession(userId: number): Promise<void>;
+}
+
+// 서비스 레이어의 메서드별 반환 타입
+export interface UserServiceInterface {
+  login(userInputData: LoginDto): Promise<LoginResult>;
+  logout(userId: number): Promise<void>;
+  checkSessionBySid(sid: string): Promise<SessionCheckResult>;
+}
