@@ -1,7 +1,7 @@
 // 세션 정보
 export const sessionConfig = {
   cookieName: "sid",
-  expireMs: 10 * 60 * 1000, // 10분 : 세션유효기간
+  expireMs:  10 * 60 * 1000, // 10분 : 세션유효기간
   cookie: {
     httpOnly: true,
     secure: true,

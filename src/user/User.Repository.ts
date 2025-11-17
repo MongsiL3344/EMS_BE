@@ -1,5 +1,5 @@
-import type { Pool, RowDataPacket } from "mysql2/promise";
-import type { UserEntity, UserRepositoryInterface } from "../types/User.Type.js";
+import type { Pool, RowDataPacket } from 'mysql2/promise';
+import type { UserEntity, UserRepositoryInterface } from '../types/User.Type.js';
 
 type UserRow = RowDataPacket & UserEntity;
 
@@ -19,7 +19,7 @@ export class UserRepository implements UserRepositoryInterface {
       const [rows] = await this.pool.query<UserRow[]>(sql, [email]);
       const row = rows[0];
       if (!row) {
-        console.error("[REPOSITORY] USER_NOT_FOUND");
+        console.error('[REPOSITORY] USER_NOT_FOUND');
         return null;
       }
       return {
@@ -30,7 +30,7 @@ export class UserRepository implements UserRepositoryInterface {
         session_expires_at: row.session_expires_at,
       };
     } catch (error) {
-      console.error("[REPOSITORY] UNKNOWN_ERROR");
+      console.error('[REPOSITORY] UNKNOWN_ERROR');
       return null;
     }
   }
@@ -48,7 +48,7 @@ export class UserRepository implements UserRepositoryInterface {
       const [rows] = await this.pool.query<UserRow[]>(sql, [sid]);
       const row = rows[0];
       if (!row) {
-        console.error("[REPOSITORY] USER_NOT_FOUND");
+        console.error('[REPOSITORY] USER_NOT_FOUND');
         return null;
       }
       return {
@@ -59,7 +59,7 @@ export class UserRepository implements UserRepositoryInterface {
         session_expires_at: row.session_expires_at,
       };
     } catch (error) {
-      console.error("[REPOSITORY] UNKNOWN_ERROR");
+      console.error('[REPOSITORY] UNKNOWN_ERROR');
       return null;
     }
   }
@@ -72,15 +72,17 @@ export class UserRepository implements UserRepositoryInterface {
       WHERE id = ?
     `;
     await this.pool.execute(sql, [sid, expiresAt, userId]);
+    console.log("[repository] session updated : ", sid);
   }
 
   /* 세션 만료 (return : void) */
-  public async clearSession(userId: number): Promise<void> {
+  public async clearSession(sid: string): Promise<void> {
     const sql = `
       UPDATE users
       SET session_id = NULL, session_expires_at = NULL
-      WHERE id = ?
+      WHERE session_id = ?
     `;
-    await this.pool.execute(sql, [userId]);
+    await this.pool.execute(sql, [sid]);
+    console.log("[repository] session cleared : ", sid);
   }
 }

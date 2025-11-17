@@ -20,3 +20,6 @@ yarn-error.log*
 ### system files ###
 .DS_Store
 Thumbs.db
+
+### DB, 세션 설정파일 ###
+src/config/
