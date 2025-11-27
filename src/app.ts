@@ -41,5 +41,8 @@ app.post('/api/signup', addUser);
  *  email code
  */
 app.post('/api/send-code', sendCode);
-
+app.use((req, res, next) => {
+  console.log(`[Request] Method: ${req.method}, Path: ${req.path}`);
+  next();
+});
 app.listen(8080, () => console.log('http://localhost:8080'));
