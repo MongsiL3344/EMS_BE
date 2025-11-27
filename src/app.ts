@@ -10,6 +10,15 @@ import { UserService } from './user/User.Service.js';
 
 // express app
 const app = express();
+const PORT = process.env.PORT || 8080;
+/**
+ * cloud api testing code
+ */
+app.use((req, res, next) => {
+  console.log(`[Request] Method: ${req.method}, Path: ${req.path}`);
+  next();
+});
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -41,13 +50,13 @@ app.post('/api/signup', addUser);
  *  email code
  */
 app.post('/api/send-code', sendCode);
-app.get('/api/send-code', sendCode);
+// app.get('/api/send-code', sendCode);
 
 /**
- * cloud api testing code
+ * healthcheck
  */
-// app.use((req, res, next) => {
-//   console.log(`[Request] Method: ${req.method}, Path: ${req.path}`);
-//   next();
-// });
-app.listen(8080, () => console.log('http://localhost:8080'));
+app.get('/health', (req, res) => {
+  res.status(200).send({ status: 'OK' });
+});
+
+app.listen(PORT, () => console.log(`http://localhost:${PORT}`));
