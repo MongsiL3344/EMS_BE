@@ -10,6 +10,7 @@ import { UserService } from './user/User.Service.js';
 
 // express app
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 8080;
 /**
  * cloud api testing code
