@@ -13,7 +13,7 @@ const app = express();
 app.set('trust proxy', 1);
 const PORT = process.env.PORT || 8080;
 /**
- * cloud api testing code
+ * cloud api log code
  */
 app.use((req, res, next) => {
   console.log(`[Request] Method: ${req.method}, Path: ${req.path}`);
@@ -58,6 +58,26 @@ app.post('/api/send-code', sendCode);
  */
 app.get('/health', (req, res) => {
   res.status(200).send({ status: 'OK' });
+});
+app.get('/health/db', async (_, res) => {
+  try {
+    const [rows] = await pool.query('SELECT 1');
+
+    console.log('DB 연결 및 쿼리 성공', rows);
+
+    return res.status(200).json({
+      status: 'success',
+      db: 'connected',
+      result: rows,
+    });
+  } catch (error: any) {
+    console.error('DB 연결 실패 (에러 전체):', error);
+
+    return res.status(500).json({
+      status: 'fail',
+      message: error.message || 'DB connection failed',
+    });
+  }
 });
 
 app.listen(PORT, () => console.log(`http://localhost:${PORT}`));
