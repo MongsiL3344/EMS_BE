@@ -9,6 +9,7 @@ import type {
   SessionInfo,
 } from '../types/User.Type.js';
 import { sessionConfig } from '../config/session.js';
+import {userRepository} from "./User.Repository.js";
 
 export class UserService implements UserServiceInterface {
   constructor(private readonly userRepository: UserRepositoryInterface) {}
@@ -106,3 +107,5 @@ export class UserService implements UserServiceInterface {
     };
   }
 }
+
+export const userService = new UserService(userRepository);
