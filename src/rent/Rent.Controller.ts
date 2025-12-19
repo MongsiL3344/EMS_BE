@@ -37,3 +37,14 @@ export async function rentItemController(req : Request, res:Response) {
     res.status(500).json({error: 'Internal server error'});
   }
 }
+//
+// export async function getItemListController(req : Request, res:Response) {
+//   try{
+//     const keyword = req.query.keyword;
+//     const category = req.query.category;
+//
+//     const FilteredItemList = await getItemListService(keyword, category);
+//   } catch (error) {
+//     console.log("error in getItemListController")
+//   }
+// }

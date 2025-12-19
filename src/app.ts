@@ -7,7 +7,7 @@ import { sendCode } from './signup/Signup.EmailCode.js';
 import { UserController } from './user/User.Controller.js';
 import { UserRepository } from './user/User.Repository.js';
 import { UserService } from './user/User.Service.js';
-import {rentItemController} from "./rent/Rent.Controller.js";
+import { rentItemController} from "./rent/Rent.Controller.js";
 
 // express app
 const app = express();
@@ -47,6 +47,7 @@ app.get('/api/checkSession', userController.checkSession); // 세션 확인용
  * rent
  */
 app.post('/api/rent', rentItemController);
+//app.get('/api/getItemList', getItemListController);
 
 /**
  *  signup

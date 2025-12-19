@@ -1,4 +1,4 @@
-import type { RentRequest } from "../types/Rent.Type.js";
+import type {RentRequest} from "../types/Rent.Type.js";
 import {findItemById, rentItemRepository} from "./Rent.Repository.js";
 
 /**
@@ -18,8 +18,7 @@ export async function rentItemService(rentRequest : RentRequest) : Promise<void>
      * 2. 요청한 물품이 대여 가능한 상태인지
      * 3. 현재 그 물품의 재고가 요청한 개수보다 적진 않은지
      */
-    if (targetItemRow.maxQuantityPerRent < rentRequest.quantity
-        || targetItemRow.isRentable === 0
+    if (targetItemRow.maxQuantityPerRent < rentRequest.quantity || !targetItemRow.isRentable
         || targetItemRow.totalQuantity - targetItemRow.rentedQuantity < rentRequest.quantity) {
       throw new Error("Invalid rent request");
     }
@@ -33,3 +32,7 @@ export async function rentItemService(rentRequest : RentRequest) : Promise<void>
     throw new Error("Item not found");
   }
 }
+//
+// export async function getItemListService(keyword : string, category : string) {
+//   //
+// }

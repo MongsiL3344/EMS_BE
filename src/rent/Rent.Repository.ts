@@ -1,6 +1,6 @@
 import type {ItemInfo, RentRequest} from "../types/Rent.Type.js";
 import {pool} from "../config/db.js";
-import type {RowDataPacket} from "mysql2/promise";
+import type {ItemRow} from "../types/Rent.Type.js";
 
 /**
  * 유저가 요청한 물품 아이디로 물품 행 찾아서 그대로 넘겨주기
@@ -22,14 +22,24 @@ export async function findItemById(itemId : number) : Promise<ItemInfo | null> {
         FROM items
         WHERE id = ? LIMIT 1
     `;
-    type ItemRow = RowDataPacket & ItemInfo;
     const [rows] = await pool.query<ItemRow[]>(sql, [itemId]);
     const row = rows[0];
     if (!row) {
       return null;
     }
     console.log("[repository] item data found : \n", row);
-    return row;
+    return {
+      itemId: row.id,
+      itemName: row.name,
+      itemCategory: row.category,
+      totalQuantity: row.total_quantity,
+      rentedQuantity: row.rented_quantity,
+      currentQuantity: row.total_quantity - row.rented_quantity,
+      isRentable: !!row.is_rentable,
+      maxQuantityPerRent: row.max_quantity_per_rent,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    } satisfies ItemInfo;
   } catch (error) {
     console.error('[REPOSITORY] UNKNOWN_ERROR');
     return null;
