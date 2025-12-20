@@ -1,5 +1,5 @@
 import type {RentRequest} from "../types/Rent.Type.js";
-import {findItemById, rentItemRepository} from "./Rent.Repository.js";
+import {findItemById, findItemList, rentItemRepository} from "./Rent.Repository.js";
 
 /**
  * 대여 실행 서비스함수
@@ -32,7 +32,15 @@ export async function rentItemService(rentRequest : RentRequest) : Promise<void>
     throw new Error("Item not found");
   }
 }
-//
-// export async function getItemListService(keyword : string, category : string) {
-//   //
-// }
+
+/**
+ * 물품 리스트 조회 서비스함수
+ * @params keyword
+ * @params category
+ * @params offset
+ * @params limit
+ * @returns ItemRow[]
+ */
+export async function getItemListService(keyword : string, category : string, offset: number, limit: number) {
+  return await findItemList(keyword, category, offset, limit);
+}

@@ -101,3 +101,63 @@ export async function rentItemRepository(rentRequest : RentRequest) : Promise<vo
     conn.release();
   }
 }
+
+/**
+ * 물품리스트 조회 레포함수
+ * @params keyword
+ * @params category
+ * @params offset
+ * @params limit
+ * @returns ItemRow[]
+ */
+export async function findItemList(keyword: string, category: string, offset: number, limit: number): Promise<ItemInfo[]> {
+  try {
+    let sql = `
+        SELECT id,
+               name,
+               category,
+               total_quantity,
+               rented_quantity,
+               is_rentable,
+               max_quantity_per_rent,
+               created_at,
+               updated_at
+        FROM items
+        WHERE 1=1
+    `;
+    
+    const params: any[] = [];
+    
+    if (keyword) {
+      sql += ` AND name LIKE ?`;
+      params.push(`%${keyword}%`);
+    }
+    
+    if (category && category !== 'ALL') {
+      sql += ` AND category = ?`;
+      params.push(category);
+    }
+    
+    // LIMIT limit (frontend handles the +1 logic if needed)
+    sql += ` LIMIT ? OFFSET ?`;
+    params.push(limit, offset);
+    
+    const [rows] = await pool.query<ItemRow[]>(sql, params);
+    
+    return rows.map(row => ({
+      itemId: row.id,
+      itemName: row.name,
+      itemCategory: row.category,
+      totalQuantity: row.total_quantity,
+      rentedQuantity: row.rented_quantity,
+      currentQuantity: row.total_quantity - row.rented_quantity,
+      isRentable: !!row.is_rentable,
+      maxQuantityPerRent: row.max_quantity_per_rent,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    }));
+  } catch (error) {
+    console.error('[REPOSITORY] findItemList error:', error);
+    return [];
+  }
+}
