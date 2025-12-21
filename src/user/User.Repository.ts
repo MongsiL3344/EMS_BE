@@ -1,5 +1,6 @@
 import type { Pool, RowDataPacket } from 'mysql2/promise';
 import type { UserEntity, UserRepositoryInterface } from '../types/User.Type.js';
+import {pool} from "../config/db.js";
 
 type UserRow = RowDataPacket & UserEntity;
 
@@ -86,3 +87,4 @@ export class UserRepository implements UserRepositoryInterface {
     console.log("[repository] session cleared : ", sid);
   }
 }
+export const userRepository = new UserRepository(pool);
