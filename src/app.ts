@@ -2,7 +2,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import { pool } from './config/db.js';
-import { addUserByAuto } from './signup/Signup.AddUser.js';
+import { addUserByAuto, addUserByManual } from './signup/Signup.AddUser.js';
 import { sendCode } from './signup/Signup.EmailCode.js';
 import { UserController } from './user/User.Controller.js';
 import { UserRepository } from './user/User.Repository.js';
@@ -46,7 +46,7 @@ app.get('/api/checkSession', userController.checkSession); // 세션 확인용
  *  signup
  */
 app.post('/api/signup/auto', addUserByAuto); // 자동가입
-// app.post('/api/signup/manual', addUserByManual); //수동가입 공사중
+app.post('/api/signup/manual', addUserByManual); //수동가입 공사중
 
 /**
  *  email code

@@ -10,23 +10,24 @@ import { pool } from '../config/db.js';
  */
 export async function addUserByAuto(req: Request, res: Response) {
   try {
-    const { email, password, name, dept, team, position } = req.body;
+    const { email, pw, name, dept, team, position, type } = req.body;
+    // console.log(req.body);
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    console.log(req.body);
+    const hashedpw = await bcrypt.hash(pw, 10);
     const sql = `
       INSERT INTO users
-      (email, password_hash, name, dept, team, position)
-      VALUES (?, ?, ?, ?, ?, ?)
+      (email, password_hash, name, dept, team, position, user_level)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
 
     await pool.execute(sql, [
       email,
-      hashedPassword,
+      hashedpw,
       name || null,
       dept || null,
       team || null,
       position || null,
+      type + 2,
     ]);
 
     return res.status(201).json({ message: '회원가입 성공' });
@@ -50,14 +51,14 @@ export async function addUserByAuto(req: Request, res: Response) {
  */
 export async function addUserByManual(req: Request, res: Response) {
   try {
-    const { email, password, name, dept, team, position } = req.body;
+    const { email, pw, name, dept, team, position, type } = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    console.log(req.body);
+    const hashedPassword = await bcrypt.hash(pw, 10);
+    // console.log(req.body);
     const sql = `
-      INSERT INTO users
-      (email, pw, name, dept, team, position)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO signup_requests
+      (email, pw, name, dept, team, position, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
 
     await pool.execute(sql, [
@@ -67,9 +68,10 @@ export async function addUserByManual(req: Request, res: Response) {
       dept || null,
       team || null,
       position || null,
+      type - 2,
     ]);
 
-    return res.status(201).json({ message: '회원가입 성공' });
+    return res.status(201).json({ message: '회원가입 신청 성공' });
   } catch (error: any) {
     console.error('회원가입 에러:', error);
 
