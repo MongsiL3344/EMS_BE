@@ -50,7 +50,7 @@ export class UserService implements UserServiceInterface {
       return {
         // 세션생성 성공 -> 유저정보, 세션정보 리턴
         ok: true,
-        user: { email: user.email },
+        user: { email: user.email, level: user.user_level },
         session: {
           session_id: sid,
           session_expires_at: expiresAt,
