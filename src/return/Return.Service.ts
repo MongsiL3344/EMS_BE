@@ -1,0 +1,74 @@
+import {getRentedItemListRepository} from './Return.Repository.js';
+import type {
+  GroupedRentedListResponse,
+  RentalStatus,
+  RentedItemResponse,
+  RentedListType,
+} from '../types/Return.Type.js';
+
+// 만기 임박 기준 (일)
+const DUE_DAYS = 7;
+
+/**
+ * 남은 일수 계산 (오늘 기준)
+ * @param dueAt 만기일
+ * @returns 남은 일수 (음수면 연체)
+ */
+function calculateDaysRemaining(dueAt: Date): number {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const dueDate = new Date(dueAt.getFullYear(), dueAt.getMonth(), dueAt.getDate());
+
+  const diffTime = dueDate.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  return diffDays;
+}
+
+/**
+ * 남은 일수에 따라 상태 분류
+ * @param daysRemaining 남은 일수
+ * @returns RentalStatus
+ */
+function classifyStatus(daysRemaining: number): RentalStatus {
+  if (daysRemaining < 0) {
+    return 'OVERDUE';
+  } else if (daysRemaining <= DUE_DAYS) {
+    return 'DUE_SOON';
+  } else {
+    return 'NORMAL';
+  }
+}
+
+/**
+ * 유저의 대여 목록을 조회하고 상태별로 그룹화하여 반환
+ * @param userId 유저 아이디
+ * @returns GroupedRentedListResponse[]
+ */
+export async function getRentedItemListService(userId: number): Promise<GroupedRentedListResponse> {
+  try {
+    const rentedList = await getRentedItemListRepository(userId);
+
+    // 각 항목에 남은 일수와 상태 추가
+    const itemsWithStatus: RentedItemResponse[] = rentedList.map((item) => {
+      const daysRemaining = calculateDaysRemaining(item.dueAt);
+      const status = classifyStatus(daysRemaining);
+
+      return {
+        ...item,
+        daysRemaining,
+        status,
+      };
+    });
+
+    // 바로 위에서 만든 itemsWithStatus를 기준에 맞게 분리해서 리턴
+    return {
+      overdue: itemsWithStatus.filter((item) => item.status === 'OVERDUE'),
+      dueSoon: itemsWithStatus.filter((item) => item.status === 'DUE_SOON'),
+      normal: itemsWithStatus.filter((item) => item.status === 'NORMAL'),
+    };
+  } catch (error) {
+    console.error('[SERVICE] getRentedItemListService error:', error);
+    throw new Error('Internal server error');
+  }
+}

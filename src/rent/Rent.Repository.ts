@@ -87,7 +87,7 @@ export async function rentItemRepository(rentRequest : RentRequest) : Promise<vo
         ?, 
         ?, 
         NOW(), 
-        DATE_ADD(NOW(), INTERVAL 7 DAY), 
+        DATE_ADD(NOW(), INTERVAL 14 DAY), 
         NULL
       )
     `;
@@ -137,8 +137,7 @@ export async function findItemList(keyword: string, category: string, offset: nu
       sql += ` AND category = ?`;
       params.push(category);
     }
-    
-    // LIMIT limit (frontend handles the +1 logic if needed)
+
     sql += ` LIMIT ? OFFSET ?`;
     params.push(limit, offset);
     

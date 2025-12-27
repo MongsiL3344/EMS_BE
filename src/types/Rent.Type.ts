@@ -9,15 +9,6 @@ export interface RentRequest {
 }
 
 /**
- * 유저의 요청에서 확장한 대여처리의 응답타입
- */
-export interface RentResponse extends RentRequest{
-  itemId: number;
-  rentDate: Date;
-  dueDate: Date;
-}
-
-/**
  * 물품 테이블값을 사용할 떄 쓰는 타입
  */
 export interface ItemInfo {
@@ -47,17 +38,3 @@ export type ItemRow = RowDataPacket & {
   created_at: Date;
   updated_at: Date;
 };
-
-
-/**
- * 대여 트랜잭션 테이블의 DTO
- */
-export interface RentTransaction {
-  id : number;
-  userId : number;
-  itemId : number;
-  quantity : number;
-  rentedAt : Date;
-  dueAt : Date;
-  returnedAt : Date | null;
-}
