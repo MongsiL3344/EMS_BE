@@ -11,7 +11,7 @@ export class UserRepository implements UserRepositoryInterface {
   public async findUserByEmail(email: string): Promise<UserEntity | null> {
     try {
       const sql = `
-      SELECT id, email, password_hash, session_id, session_expires_at
+      SELECT id, email, password_hash, session_id, session_expires_at, user_level
       FROM users
       WHERE email = ?
       LIMIT 1
@@ -29,6 +29,7 @@ export class UserRepository implements UserRepositoryInterface {
         password_hash: row.password_hash,
         session_id: row.session_id,
         session_expires_at: row.session_expires_at,
+        user_level: row.user_level,
       };
     } catch (error) {
       console.error('[REPOSITORY] UNKNOWN_ERROR');
@@ -40,7 +41,7 @@ export class UserRepository implements UserRepositoryInterface {
   public async findUserBySessionId(sid: string): Promise<UserEntity | null> {
     try {
       const sql = `
-      SELECT id, email, password_hash, session_id, session_expires_at
+      SELECT id, email, password_hash, session_id, session_expires_at, user_level
       FROM users
       WHERE session_id = ?
       LIMIT 1
@@ -58,6 +59,7 @@ export class UserRepository implements UserRepositoryInterface {
         password_hash: row.password_hash,
         session_id: row.session_id,
         session_expires_at: row.session_expires_at,
+        user_level: row.user_level,
       };
     } catch (error) {
       console.error('[REPOSITORY] UNKNOWN_ERROR');

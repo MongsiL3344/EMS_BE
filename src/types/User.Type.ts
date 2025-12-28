@@ -14,6 +14,7 @@ export type UserEntity = Readonly<{
   password_hash: string;
   session_id: string | null;
   session_expires_at: Date | null;
+  user_level: number; // 1,2: admin / 3,4: user
 }>;
 
 // 세션체크 메서드의 리턴타입 (state : "valid" / "expired" / "invalid") -> valid일 경우에만 세션정보 리턴
@@ -22,11 +23,11 @@ export type SessionCheckResult =
   | { state: "expired" }
   | { state: "invalid" };
 
-// 응답타입 설정 (성공 -> OK, user.email, message, 세션정보 / 실패 -> OK, user.email, message)
+// 응답타입 설정 (성공 -> OK, user.email, level, message, 세션정보 / 실패 -> OK, user.email, message)
 export type SessionInfo = { session_id: string; session_expires_at: Date };
 export type LoginSuccess = {
   ok: true;
-  user: { email: string };
+  user: { email: string; level: number };
   session: SessionInfo;
   message: string;
 };
