@@ -1,4 +1,4 @@
-import type {RowDataPacket} from "mysql2/promise";
+import type { RowDataPacket } from 'mysql2/promise';
 /**
  * 유저가 대여 요청을 보낼때 받아야되는 요청객체타입
  */
@@ -20,8 +20,8 @@ export interface ItemInfo {
   currentQuantity: number;
   isRentable: boolean;
   maxQuantityPerRent: number;
-  createdAt : Date;
-  updatedAt : Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 /**
