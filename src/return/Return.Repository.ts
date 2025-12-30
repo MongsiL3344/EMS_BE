@@ -18,16 +18,16 @@ interface RentedRow extends RowDataPacket {
 export async function getRentedItemListRepository(userId: number): Promise<RentedListType[]> {
   try {
     const sql = `
-      SELECT 
-        r.id,
-        r.item_id,
-        i.name AS item_name,
-        r.quantity,
-        r.rented_at,
-        r.due_at
+      SELECT r.id,
+             r.item_id,
+             i.name AS item_name,
+             r.quantity,
+             r.rented_at,
+             r.due_at
       FROM rentals r
-      JOIN items i ON r.item_id = i.id
-      WHERE r.user_id = ? AND r.returned_at IS NULL
+             JOIN items i ON r.item_id = i.id
+      WHERE r.user_id = ?
+        AND r.returned_at IS NULL
       ORDER BY r.rented_at DESC
     `;
 
@@ -44,5 +44,55 @@ export async function getRentedItemListRepository(userId: number): Promise<Rente
   } catch (error) {
     console.error('[REPOSITORY] getRentedItemListRepository error:', error);
     return [];
+  }
+}
+
+export async function returnItemRepository(transactionId: number, userId: number): Promise<void> {
+  const connection = await pool.getConnection();
+
+  try {
+    await connection.beginTransaction();
+
+    // 1. 해당 대여 이력 조회 (item_id, quantity)
+    const [rows] = await connection.query<RentedRow[]>(
+      `
+        SELECT item_id, quantity
+        FROM rentals
+        WHERE id = ?
+          AND user_id = ?
+          AND returned_at IS NULL`,
+      [transactionId, userId]
+    );
+    if (!rows[0]) {
+      throw new Error('해당 대여 이력을 찾을 수 없습니다.');
+    }
+    const { item_id, quantity } = rows[0];
+
+    // 2. 반납처리
+    await connection.query(
+      `
+        UPDATE rentals
+        SET returned_at = NOW()
+        WHERE id = ?
+          AND user_id = ?`,
+      [transactionId, userId]
+    );
+
+    // 3. items 테이블의 rented_quantity 감소
+    await connection.query(
+      `
+        UPDATE items
+        SET rented_quantity = rented_quantity - ?
+        WHERE id = ?`,
+      [quantity, item_id]
+    );
+
+    await connection.commit();
+  } catch (error) {
+    await connection.rollback();
+    console.error('[REPOSITORY] returnItemRepository error:', error);
+    throw error;
+  } finally {
+    connection.release();
   }
 }

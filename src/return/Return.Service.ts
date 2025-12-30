@@ -1,9 +1,8 @@
-import {getRentedItemListRepository} from './Return.Repository.js';
+import { getRentedItemListRepository, returnItemRepository } from './Return.Repository.js';
 import type {
   GroupedRentedListResponse,
   RentalStatus,
   RentedItemResponse,
-  RentedListType,
 } from '../types/Return.Type.js';
 
 // 만기 임박 기준 (일)
@@ -61,14 +60,30 @@ export async function getRentedItemListService(userId: number): Promise<GroupedR
       };
     });
 
-    // 바로 위에서 만든 itemsWithStatus를 기준에 맞게 분리해서 리턴
+    const sortByDaysRemaining = (a: RentedItemResponse, b: RentedItemResponse) => {
+      return a.daysRemaining - b.daysRemaining;
+    };
+
     return {
-      overdue: itemsWithStatus.filter((item) => item.status === 'OVERDUE'),
-      dueSoon: itemsWithStatus.filter((item) => item.status === 'DUE_SOON'),
-      normal: itemsWithStatus.filter((item) => item.status === 'NORMAL'),
+      overdue: itemsWithStatus
+        .filter((item) => item.status === 'OVERDUE')
+        .sort(sortByDaysRemaining),
+      dueSoon: itemsWithStatus
+        .filter((item) => item.status === 'DUE_SOON')
+        .sort(sortByDaysRemaining),
+      normal: itemsWithStatus.filter((item) => item.status === 'NORMAL').sort(sortByDaysRemaining),
     };
   } catch (error) {
     console.error('[SERVICE] getRentedItemListService error:', error);
+    throw new Error('Internal server error');
+  }
+}
+
+export async function returnItemService(transactionId: number, userId: number) {
+  try {
+    await returnItemRepository(transactionId, userId);
+  } catch (error) {
+    console.error('[SERVICE] returnItemService error:', error);
     throw new Error('Internal server error');
   }
 }
