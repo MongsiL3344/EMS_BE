@@ -1,6 +1,6 @@
 import type { Response, Request } from 'express';
 import { sessionConfig } from '../config/session.js';
-import { userService } from '../user/User.Service.js';
+import { checkSessionBySid } from '../user/User.Service.js';
 import { getRentedItemListService, returnItemService } from './Return.Service.js';
 
 /**
@@ -16,7 +16,7 @@ export async function getRentedListController(req: Request, res: Response) {
 
   try {
     // 세션정보로 세션상태 확인
-    const sessionStatus = await userService.checkSessionBySid(sid);
+    const sessionStatus = await checkSessionBySid(sid);
     if (sessionStatus.state === 'invalid') {
       return res.status(401).json({ message: 'SESSION_INVALID' });
     }
@@ -42,7 +42,7 @@ export async function returnItemController(req: Request, res: Response) {
   }
 
   try {
-    const sessionStatus = await userService.checkSessionBySid(sid);
+    const sessionStatus = await checkSessionBySid(sid);
     if (sessionStatus.state === 'invalid') {
       return res.status(401).json({ message: 'SESSION_INVALID' });
     }

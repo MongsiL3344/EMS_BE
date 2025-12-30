@@ -2,7 +2,7 @@ import type { Request, Response } from 'express';
 import type { RentRequest } from '../types/Rent.Type.js';
 import { rentItemService } from './Rent.Service.js';
 import { sessionConfig } from '../config/session.js';
-import { userService } from '../user/User.Service.js';
+import { checkSessionBySid } from '../user/User.Service.js';
 import { getItemListService } from './Rent.Service.js';
 import { z } from 'zod';
 
@@ -18,7 +18,7 @@ export async function rentItemController(req: Request, res: Response) {
     return res.status(401).json({ message: 'NO_SESSION' });
   }
   try {
-    const sessionStatus = await userService.checkSessionBySid(sid);
+    const sessionStatus = await checkSessionBySid(sid);
     if (sessionStatus.state === 'invalid') {
       return res.status(401).json({ message: 'SESSION_INVALID' });
     }
