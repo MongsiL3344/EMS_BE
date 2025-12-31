@@ -1,7 +1,13 @@
 import type { Response, Request } from 'express';
+import { z } from 'zod';
 import { sessionConfig } from '../config/session.js';
 import { checkSessionBySid } from '../user/User.Service.js';
 import { getRentedItemListService, returnItemService } from './Return.Service.js';
+
+// 반납 요청 zod 스키마
+const ReturnRequestSchema = z.object({
+  id: z.number().int().positive(),
+});
 
 /**
  * 유저의 대여 목록 조회 컨트롤러
@@ -50,11 +56,13 @@ export async function returnItemController(req: Request, res: Response) {
       return res.status(401).json({ message: 'SESSION_EXPIRED' });
     }
     const userId = sessionStatus.user.id;
-    const transactionId = req.body.id;
+
+    const { id: transactionId } = ReturnRequestSchema.parse(req.body);
     await returnItemService(transactionId, userId);
+
+    return res.status(200).json({ message: 'return success' });
   } catch (error) {
     console.error('[CONTROLLER] returnItemController error:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
-  return res.status(200).json({ message: 'return success' });
 }

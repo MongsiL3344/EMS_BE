@@ -6,6 +6,12 @@ import { checkSessionBySid } from '../user/User.Service.js';
 import { getItemListService } from './Rent.Service.js';
 import { z } from 'zod';
 
+// 대여 요청 zod 스키마
+const RentRequestSchema = z.object({
+  itemId: z.number().int().positive(),
+  quantity: z.number().int().positive().max(10),
+});
+
 /**
  * 대여 실행하는 컨트롤러 함수
  * 성공시에는 반환값 없음
@@ -27,11 +33,8 @@ export async function rentItemController(req: Request, res: Response) {
     }
     const userId = sessionStatus.user.id;
 
-    const rentRequest: RentRequest = {
-      userId,
-      itemId: req.body.itemId,
-      quantity: req.body.quantity,
-    };
+    const { itemId, quantity } = RentRequestSchema.parse(req.body);
+    const rentRequest: RentRequest = { userId, itemId, quantity };
     await rentItemService(rentRequest);
     res.status(200).json({ message: 'rent success' });
   } catch (error) {
