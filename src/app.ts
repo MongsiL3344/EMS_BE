@@ -4,9 +4,14 @@ import express from 'express';
 import { pool } from './config/db.js';
 import { addUserByAuto, addUserByManual } from './signup/Signup.AddUser.js';
 import { sendCode } from './signup/Signup.EmailCode.js';
-import { loginController, logoutController, checkSessionController } from './user/User.Controller.js';
+import {
+  loginController,
+  logoutController,
+  checkSessionController,
+} from './user/User.Controller.js';
 import { rentItemController, getItemListController } from './rent/Rent.Controller.js';
 import { getRentedListController, returnItemController } from './return/Return.Controller.js';
+import { authCheck } from './utils/authCheck.js';
 
 // express app
 const app = express();
@@ -40,14 +45,14 @@ app.get('/api/checkSession', checkSessionController); // 세션 확인용
 /**
  * rent
  */
-app.post('/api/rent', rentItemController);
-app.get('/api/getItemList', getItemListController);
+app.post('/api/rent', authCheck, rentItemController);
+app.get('/api/getItemList', authCheck, getItemListController);
 
 /**
  * return
  */
-app.get('/api/getRentedItemList', getRentedListController);
-app.post('/api/returnItem', returnItemController);
+app.get('/api/getRentedItemList', authCheck, getRentedListController);
+app.post('/api/returnItem', authCheck, returnItemController);
 
 /**
  *  signup
