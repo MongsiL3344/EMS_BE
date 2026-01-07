@@ -29,7 +29,9 @@ export async function loginController(req: Request, res: Response) {
       .json({ ok: true, user: serviceResponse.user, message: serviceResponse.message });
   } catch (error) {
     console.error('UNKNOWN_ERROR: ' + error);
-    return res.status(400).json({ ok: false, message: 'LOGIN_FAILED' });
+    return res
+      .status(400)
+      .json({ ok: false, user: req.body?.email ?? null, message: 'LOGIN_FAILED' });
   }
 }
 

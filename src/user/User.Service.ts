@@ -1,11 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
-import type {
-  LoginDto,
-  LoginResult,
-  SessionCheckResult,
-  SessionInfo,
-} from '../types/User.Type.js';
+import type { LoginDto, LoginResult, SessionCheckResult, SessionInfo } from '../types/User.Type.js';
 import { sessionConfig } from '../config/session.js';
 import {
   findUserByEmail,
