@@ -7,6 +7,6 @@ export const sessionConfig = {
     secure: true,
     sameSite: 'none',
     path: '/',
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7일 : 쿠키 유효기간
+    maxAge: 10 * 60 * 1000, // 10분 : 쿠키 유효기간
   } as const,
 };

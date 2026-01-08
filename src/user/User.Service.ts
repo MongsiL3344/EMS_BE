@@ -76,6 +76,7 @@ export async function logoutService(sid: string): Promise<void> {
   console.log('[service] user data to logout : \n', user);
   if (!user) {
     // 이미 세션이 없거나 잘못된 sid인 경우 -> 할 일 없음
+    await clearSession(sid);
     return;
   }
   await clearSession(sid); //로그아웃시 세션청소

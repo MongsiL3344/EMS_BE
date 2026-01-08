@@ -19,16 +19,16 @@ export async function authCheck(req: Request, res: Response, next: NextFunction)
   const sid = req.cookies[sessionConfig.cookieName];
   // 세션 ID가 없으면 401
   if (!sid) {
-    return res.status(401).json({ message: 'NO_SESSION' });
+    return res.status(401).json({ ok: false, message: 'NO_SESSION' });
   }
 
   // 세션 상태 확인
   const sessionStatus = await checkSessionBySid(sid);
   if (sessionStatus.state === 'invalid') {
-    return res.status(401).json({ message: 'SESSION_INVALID' });
+    return res.status(401).json({ ok: false, message: 'SESSION_INVALID' });
   }
   if (sessionStatus.state === 'expired') {
-    return res.status(401).json({ message: 'SESSION_EXPIRED' });
+    return res.status(401).json({ ok: false, message: 'SESSION_EXPIRED' });
   }
 
   // 유효한 세션이면 userId를 req에 저장하고 다음으로

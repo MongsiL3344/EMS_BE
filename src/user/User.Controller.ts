@@ -45,17 +45,17 @@ export async function logoutController(req: Request, res: Response) {
     const sid = req.cookies['sid'];
     console.log(`sid to remove : `, sid); // 테스트로그
 
-    // 쿠키에 세션이 없으면 -> 이미 로그아웃 상태로 보고 204 리턴
+    // 쿠키에 세션이 없으면 -> 이미 로그아웃 상태로 보고 400 리턴
     if (!sid) {
       console.log('sid not found, already logged out: ' + sid); // 테스트로그
-      return res.status(200).send();
+      return res.status(400).json({ ok: false, message: 'ALREADY_LOGOUT' });
     }
 
     // 서비스 레이어 호출해서 세션 정리
     await logoutService(sid);
     console.log('logout success!');
     // 응답
-    return res.status(200).send();
+    return res.status(200).json({ ok: true, message: 'LOGOUT_SUCCESS' });
   } catch (error) {
     console.error('UNKNOWN_ERROR: ' + error);
     return res.status(500).json({ ok: false, message: 'LOGOUT_FAILED' });
